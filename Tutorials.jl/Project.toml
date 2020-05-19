@@ -1,0 +1,13 @@
+name = "Tutorials"
+uuid = "ebdb3c9b-6574-4d06-be50-aff7036a623f"
+authors = ["Santiago Badia"]
+version = "0.1.0"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
