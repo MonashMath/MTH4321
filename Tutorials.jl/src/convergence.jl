@@ -88,7 +88,7 @@ function hp_refinement(u,ps,ncells)
 
   end
 
-  return eh1s_hp, ndof_hp, uhs_hp
+  return eh1s_hp, ndofs_hp, uhs_hp
 
 end
 
@@ -117,6 +117,8 @@ plot(ndofs,eh1,
      label=["H1_error"],
      shape=:auto,
      xlabel="DOFS",ylabel="error norm")
+
+plot_uhs(uhs,ps,ncells)
 
 #
 
@@ -299,3 +301,56 @@ slope = compute_slope(ndofs,eh1,log10,log10)
 # the oscillations, we recover the expected convergence. Don't care about
 # the first points in a convergence analysis, they can behave in an
 # erratic way.
+
+
+
+using Gridap.Geometry
+using Gridap.ReferenceFEs
+using Gridap.Arrays
+using Gridap.Visualization
+using Gridap.Visualization: VisualizationGrid, _prepare_cdata, _prepare_pdata
+using Plots
+
+
+function visualization_data(trian::Triangulation, order, cellfields)
+  f = (reffe) -> UnstructuredGrid(LagrangianRefFE(Float64,get_polytope(reffe),order))
+  ref_grids = map(f, get_reffes(trian))
+  visgrid = VisualizationGrid(trian,ref_grids)
+  cdata = _prepare_cdata(Dict(),visgrid.sub_cell_to_cell)
+  pdata = _prepare_pdata(trian,cellfields,visgrid.cell_to_refpoints)
+  visgrid, cdata, pdata
+end
+
+function plot_data_for_1d_fe_function(trian,uh,order)
+  visgrid, cdata, pdata = visualization_data(trian,order,["uh"=>uh])
+  x = apply(x->x[1], get_node_coordinates(visgrid))
+  y = pdata["uh"]
+  p = sortperm(x)
+  return x[p], y[p]
+end
+
+function plot_uhs(uhs,ps,ncells)
+  X      = Vector{Float64}[]
+  Y      = Vector{Float64}[]
+  labels = String[]
+  for (i,p) in enumerate(ps)
+    for (j,N) in enumerate(ncells)
+        domain = (0,1)
+        partition = (N,)
+        model = CartesianDiscreteModel(domain,partition)
+        trian = get_triangulation(model)
+        x,y = plot_data_for_1d_fe_function(trian,uhs[i][j],p)
+        push!(X,x)
+        push!(Y,y)
+        push!(labels, "p=$(p) N=$(N)")
+    end
+  end
+  plot(X[1],Y[1],label=labels[1],shape=:auto)
+  for i=2:length(X)
+   plot!(X[i],Y[i],label=labels[i],shape=:auto)
+  end
+  plot!(xlim=(0,1))
+  plot!(xaxis=:identity, yaxis=:identity,
+     title="Computed uh(x) for varying values of p and h=1/N",
+     xlabel="x",ylabel="uh(x)", legend=:left)
+end
