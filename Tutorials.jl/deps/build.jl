@@ -5,7 +5,8 @@ repo_src = joinpath(@__DIR__,"..","src")
 notebooks_dir = joinpath(@__DIR__,"..","notebooks")
 
 files = [
-         "Poisson equation"=>"poisson.jl"]
+         "Poisson equation"=>"poisson.jl",
+         "Convergence tests"=>"convergence.jl"]
 
 Sys.rm(notebooks_dir;recursive=true,force=true)
 for (i,(title,filename)) in enumerate(files)
