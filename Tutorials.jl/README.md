@@ -6,7 +6,7 @@
 [![Codecov](https://codecov.io/gh/monashmath/MTH4321/Tutorials.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/monashmath/MTH4321/Tutorials.jl)
 [![Coveralls](https://coveralls.io/repos/github/monashmath/MTH4321/Tutorials.jl/badge.svg?branch=master)](https://coveralls.io/github/monashmath/MTH4321/Tutorials.jl?branch=master)
 
-These tutorials are delivered by @santiagobadia.
+These tutorials are delivered by [@santiagobadia](https://github.com/santiagobadia).
 
 In this set of tutorials, we will use the [`Gridap`](https://github.com/gridap/Gridap.jl) software library developed by @santiagobadia and co-workers. This library provides tools for the numerical approximation of partial differential equations using mesh-based techniques (finite element methods in general). The library is written in [`Julia`](https://julialang.org), a somehow recent programming language that combines the expressiveness of dynamic languages like `Python` and the performance of static languages like `C++` or `FORTRAN`.
 
@@ -25,5 +25,7 @@ The first tutorial is a driver for the approximation of the simplest possible fi
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/MonashMath/MTH4321/master?filepath=Tutorials.jl%2Fnotebooks%2Ft001_poisson.ipynb)
 
 # Tutorial 2
+
+In the second tutorial, we will consider different methods of manufactured solutions, and carry out h and p-refinement convergence studies for different problems. We will plot the results and analyse them. 
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/MonashMath/MTH4321/master?filepath=Tutorials.jl%2Fnotebooks%2Ft002_convergence.ipynb)
