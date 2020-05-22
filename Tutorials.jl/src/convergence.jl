@@ -92,217 +92,8 @@ function hp_refinement(u,ps,ncells)
 
 end
 
-# ## Test 1
-#
-# **Objective:** Check the error for linear finite elements with h-refinement.
-#
-# **Description:** In the test, we want to show the error in terms of number of DOFs
-# using a log-log plot. We consider a family of meshes with
-# 4, 8, 16, 32 cells in the domain $(0,1)$. We consider a very smooth
-# analytical solution $u(x) = sin(2 \pi x)$.
-#
-# We compute the slope of the log-log plot using a linear regresion.
-#
-# **Exercise:** Consider different orders, e.g., $p=1,2,3,4,5$. What do you
-# think about the numerical slope? Is it what we should expect from theory?
-
-u(x) = sin(2*π*x[1])
-ps = 1:5
-ncells = [ 2^i for i in 2:5 ]
-
-eh1, ndofs, uhs = hp_refinement(u,ps,ncells)
-
-plot(ndofs,eh1,
-     xaxis=:log, yaxis=:log,
-     label=["H1_error"],
-     shape=:auto,
-     xlabel="DOFS",ylabel="error norm")
-
-plot_uhs(uhs,ps,ncells)
-
-#
-
-# Let us compute the slope for all these orders.
-# `funx` and `funy` determines the function we want to apply for the
-# $x$ and $y$ axis, e.g., log10, or identity.
-
-function compute_slope(ndofs,error,funx,funy)
-  slope = Float64[]
-  for i in 1:length(ndofs)
-    x = funx.(ndofs[i])
-    y = funy.(error[i])
-    linreg = hcat(fill!(similar(x), 1), x) \ y
-    push!(slope,linreg[2])
-  end
-  return slope
-end
-
-#
-
-slope = compute_slope(ndofs,eh1,log10,log10)
-
-# **Answer:** For first order, we observe superconvergence, better convergence
-# than stated by theory. For higher orders, the computed order
-# of convergence is as stated by the theory.
-#
-# Bounds can always be better than expected, known as
-# superconvergence. Some times, we can prove mathematically why it
-# happens for a particular mesh and discretisation method.
-#
-
-# ## Test 2
-#
-# **Objective:** Check the error for linear finite elements with h-refinement.
-#
-# **Description:** In the test, we want to show the error in terms of number of DOFs
-# using a log-log plot. We consider a family of meshes with
-# 3, 6, 12, 24 cells in the domain $(0,1)$. The different with respect
-# to the previous test is the analytical solution we want. We have defined
-# the function as a piecewise function in $C^1([0,1])$ but not in
-# $C^2([0,1])$. The function is not in $H^2((0,1))$.
-#
-# We compute the slope of the log-log plot using a linear regresion.
-#
-# **Exercise 1:** Consider different orders, e.g., $p=1,2,3,4,5$. What do you
-# think about the numerical slope? Is it what we should expect from theory?
-#
-# **Exercise 2:** Run the same code for meshes with 2, 4, 8, 16 cells.
-# What happens with the error? How can you explain it?
-
-u(x) = x[1] > 0.5 ? 1+2*(x[1]-0.5)-8*(x[1]-0.5)^2 : 2*x[1]
-ps = 1:7
-ncells = [3^i for i in 3:7]
-
-eh1, ndofs, uhs = hp_refinement(u,ps,ncells)
-
-plot(ndofs,eh1,
-     xaxis=:log, yaxis=:log,
-     label=1:length(ndofs),
-     shape=:auto,
-     xlabel="DOFS",ylabel="error norm")
-
-#
-
-slope = compute_slope(ndofs,eh1,log10,log10)
-
-# **Answer 1:** The results are as we expect from theory because the solution
-# is only in $H^1((0,1))$. Higher order methods cannot exploit any
-# smoothness. So, we cannot improve the slope, as predicted by the theory.
-#
-# **Answer 2:** For this particular choice of the mesh, there is a point right
-# where the piecewise function changes. We can check that the exact
-# solution is in the finite element space. Thus, it is easy to check from
-# theory that with the Galerkin method we recover the exact solution (up to
-# errors related to linear solver, etc). Take a look at Cea's lemma,
-# the error is zero (for exact algebra).
-
-# ## Test 3
-#
-# **Objective:** Check the error for high order finite elements with
-# p-refinement.
-#
-# **Description:** We consider the same problem as above for a mesh with 9 cells, and
-# compute the error for orders 1, 2, 3, 4. Since we fix the mesh and
-# increase the order, it is a p-refinement.
-#
-# **Exercise:** What happens with the error?
-
-u(x) = x[1] > 0.5 ? 1+2*(x[1]-0.5)-8*(x[1]-0.5)^2 : 2*x[1]
-ps = 1:5
-ncells = 9
-
-function p_refinement(u,ps,ncells)
-  eh1, ndofs, uhs = hp_refinement(u,ps,[ncells])
-  eh1 = [eh1[i][1] for i in 1:length(eh1)]
-  ndofs = [ndofs[i][1] for i in 1:length(ndofs)]
-  uhs = [uhs[i][1] for i in 1:length(uhs)]
-  return eh1, ndofs, uhs
-end
-
-eh1, ndofs, uhs = p_refinement(u,ps,ncells)
-
-
-plot(ndofs,eh1,
-     xaxis=:identity, yaxis=:log,
-     label=1:length(ndofs),
-     shape=:auto,
-     xlabel="DOFS",ylabel="error norm")
-
-#
-
-slope = compute_slope([ndofs],[eh1],identity,log10)
-
-# **Answer:** Since we cannot exploit smoothness, we do not improve the solution
-# increasing the order. We cannot see convergence!
-
-# ## Test 4
-#
-# **Objective:** Check the error for high order finite elements with
-# p-refinement for a smooth solution.
-#
-# **Description:** We consider the same problem as above for a mesh with 9 cells, and
-# compute the error for orders 1, 2, 3, 4. Since we fix the mesh and
-# increase the order, it is a p-refinement. The difference is that now the
-# solution is very smooth $u(x) = \sin (2\pi x)$.
-#
-# **Exercise:** What happens with the error?
-
-u(x) = sin(2*π*x[1])
-ps = 1:9
-ncells = 4
-
-eh1, ndofs, uhs = p_refinement(u,ps,ncells)
-
-plot(ndofs,eh1,
-     xaxis=:identity, yaxis=:log,
-     label=1:length(ndofs),
-     shape=:auto,
-     xlabel="DOFS",ylabel="error norm")
-
-#
-
-slope = compute_slope([ndofs],[eh1],identity,log10)
-
-# **Answer:** p-refinement is an excellent choice, we have exponential
-# convergence! For smooth solutions, p-refinement is more cost effective
-# than h-refinement, exponential vs. algebraic convergence.
-
-
-# ## Test 5
-#
-# **Objective:** Check the error for high order finite elements with
-# h and p-refinement for a very oscillatory solution.
-#
-# **Description:** We consider the same setting as in the previous test.
-# The difference is that now the
-# solution is very oscillatory $u(x) = \sin (64 \pi x)$.
-#
-# **Exercise:** What happens with the error?
-
-u(x) = sin(64*π*x[1])
-ps = 2:5
-ncells = [2^i for i in 3:10]
-
-eh1, ndofs, uhs = hp_refinement(u,ps,ncells)
-
-plot(ndofs,eh1,
-     xaxis=:log, yaxis=:log,
-     label=1:length(ndofs),
-     shape=:auto,
-     xlabel="DOFS",ylabel="error norm")
-
-#
-
-slope = compute_slope(ndofs,eh1,log10,log10)
-
-# **Answer:** What we observe is the so-called pre-asymptotic behaviour. The
-# solution is so bad approximated for the coarsest meshes that we cannot
-# see the expected convergence. Once we have a mesh that can capture
-# the oscillations, we recover the expected convergence. Don't care about
-# the first points in a convergence analysis, they can behave in an
-# erratic way.
-
-
+# The following function is for printing the finite element solutions but you do not
+# have to understand the details. Please skip it.
 
 using Gridap.Geometry
 using Gridap.ReferenceFEs
@@ -310,7 +101,6 @@ using Gridap.Arrays
 using Gridap.Visualization
 using Gridap.Visualization: VisualizationGrid, _prepare_cdata, _prepare_pdata
 using Plots
-
 
 function visualization_data(trian::Triangulation, order, cellfields)
   f = (reffe) -> UnstructuredGrid(LagrangianRefFE(Float64,get_polytope(reffe),order))
@@ -354,3 +144,225 @@ function plot_uhs(uhs,ps,ncells)
      title="Computed uh(x) for varying values of p and h=1/N",
      xlabel="x",ylabel="uh(x)", legend=:left)
 end
+
+# ## Test 1
+#
+# **Objective:** Check the error for linear finite elements with h-refinement.
+#
+# **Description:** In the test, we want to show the error in terms of number of DOFs
+# using a log-log plot. We consider a family of meshes with
+# 4, 8, 16, 32 cells in the domain $(0,1)$. We consider a very smooth
+# analytical solution $u(x) = sin(2 \pi x)$.
+#
+# We compute the slope of the log-log plot using a linear regresion.
+#
+# **Exercise:** Consider different orders, e.g., $p=1,2,3,4,5$. What do you
+# think about the numerical slope? Is it what we should expect from theory?
+
+u(x) = sin(2*π*x[1])
+ps = collect(1:4)
+ncells = [ 2^i for i in 2:4 ]
+
+eh1, ndofs, uhs = hp_refinement(u,ps,ncells)
+
+function convergence_plot(ndofs,eh1,ps)
+  plot(ndofs[1],eh1[1],label="p=$(ps[1])",shape=:auto)
+  for i=2:length(ndofs)
+    plot!(ndofs[i],eh1[i],label="p=$(ps[i])",shape=:auto)
+  end
+  plot!(xaxis=:log, yaxis=:log,
+  shape=:auto,
+  label=["H1_error"],
+  xlabel="DOFS",ylabel="error norm")
+end
+
+convergence_plot(ndofs,eh1,ps)
+
+#
+
+# Let us compute the slope for all these orders.
+# `funx` and `funy` determines the function we want to apply for the
+# $x$ and $y$ axis, e.g., log10, or identity.
+
+function compute_slope(ndofs,error,funx,funy)
+  slope = Float64[]
+  for i in 1:length(ndofs)
+    x = funx.(ndofs[i])
+    y = funy.(error[i])
+    linreg = hcat(fill!(similar(x), 1), x) \ y
+    push!(slope,linreg[2])
+  end
+  return slope
+end
+
+#
+
+slope = compute_slope(ndofs,eh1,log10,log10)
+
+#
+
+plot_uhs(uhs,ps,ncells)
+
+# **Answer:** For first order, we observe superconvergence, better convergence
+# than stated by theory. For higher orders, the computed order
+# of convergence is as stated by the theory.
+#
+# Bounds can always be better than expected, known as
+# superconvergence. Some times, we can prove mathematically why it
+# happens for a particular mesh and discretisation method.
+#
+
+# ## Test 2
+#
+# **Objective:** Check the error for linear finite elements with h-refinement.
+#
+# **Description:** In the test, we want to show the error in terms of number of DOFs
+# using a log-log plot. We consider a family of meshes with
+# 3, 6, 12, 24 cells in the domain $(0,1)$. The different with respect
+# to the previous test is the analytical solution we want. We have defined
+# the function as a piecewise function in $C^1([0,1])$ but not in
+# $C^2([0,1])$. The function is not in $H^2((0,1))$.
+#
+# We compute the slope of the log-log plot using a linear regresion.
+#
+# **Exercise 1:** Consider different orders, e.g., $p=1,2,3,4,5$. What do you
+# think about the numerical slope? Is it what we should expect from theory?
+#
+# **Exercise 2:** Run the same code for meshes with 2, 4, 8, 16 cells.
+# What happens with the error? How can you explain it?
+
+u(x) = x[1] > 0.5 ? 1+2*(x[1]-0.5)-8*(x[1]-0.5)^2 : 2*x[1]
+ps = collect(1:5)
+ncells = [3^i for i in 3:6]
+
+eh1, ndofs, uhs = hp_refinement(u,ps,ncells)
+
+convergence_plot(ndofs,eh1,ps)
+
+#
+
+slope = compute_slope(ndofs,eh1,log10,log10)
+
+#
+
+plot_uhs(uhs,ps,ncells)
+
+# **Answer 1:** The results are as we expect from theory because the solution
+# is only in $H^1((0,1))$. Higher order methods cannot exploit any
+# smoothness. So, we cannot improve the slope, as predicted by the theory.
+#
+# **Answer 2:** For this particular choice of the mesh, there is a point right
+# where the piecewise function changes. We can check that the exact
+# solution is in the finite element space. Thus, it is easy to check from
+# theory that with the Galerkin method we recover the exact solution (up to
+# errors related to linear solver, etc). Take a look at Cea's lemma,
+# the error is zero (for exact algebra).
+
+# ## Test 3
+#
+# **Objective:** Check the error for high order finite elements with
+# p-refinement.
+#
+# **Description:** We consider the same problem as above for a mesh with 9 cells, and
+# compute the error for orders 1, 2, 3, 4. Since we fix the mesh and
+# increase the order, it is a p-refinement.
+#
+# **Exercise:** What happens with the error?
+
+u(x) = x[1] > 0.5 ? 1+2*(x[1]-0.5)-8*(x[1]-0.5)^2 : 2*x[1]
+ps = 1:5
+ncells = 9
+
+function p_refinement(u,ps,ncells)
+  eh1, ndofs, uhs = hp_refinement(u,ps,[ncells])
+  eh1 = [eh1[i][1] for i in 1:length(eh1)]
+  ndofs = [ndofs[i][1] for i in 1:length(ndofs)]
+  uhs = [uhs[i][1] for i in 1:length(uhs)]
+  return eh1, ndofs, uhs
+end
+
+eh1, ndofs, uhs = p_refinement(u,ps,ncells)
+
+#
+
+plot(ndofs,eh1,
+     xaxis=:identity, yaxis=:log,
+     label=1:length(ndofs),
+     shape=:auto,
+     xlabel="DOFS",ylabel="error norm")
+
+#
+
+slope = compute_slope([ndofs],[eh1],identity,log10)
+
+# **Answer:** Since we cannot exploit smoothness, we do not improve the solution
+# increasing the order. We cannot see convergence!
+
+# ## Test 4
+#
+# **Objective:** Check the error for high order finite elements with
+# p-refinement for a smooth solution.
+#
+# **Description:** We consider the same problem as above for a mesh with 9 cells, and
+# compute the error for orders 1, 2, 3, 4. Since we fix the mesh and
+# increase the order, it is a p-refinement. The difference is that now the
+# solution is very smooth $u(x) = \sin (2\pi x)$.
+#
+# **Exercise:** What happens with the error?
+
+u(x) = sin(2*π*x[1])
+ps = 1:9
+ncells = 4
+
+eh1, ndofs, uhs = p_refinement(u,ps,ncells)
+
+#
+
+plot(ndofs,eh1,
+     xaxis=:identity, yaxis=:log,
+     label=:pconv,
+     shape=:auto,
+     xlabel="DOFS",ylabel="error norm")
+
+#
+
+slope = compute_slope([ndofs],[eh1],identity,log10)
+
+#
+
+plot_uhs(uhs,ps,ncells)
+
+# **Answer:** p-refinement is an excellent choice, we have exponential
+# convergence! For smooth solutions, p-refinement is more cost effective
+# than h-refinement, exponential vs. algebraic convergence.
+
+
+# ## Test 5
+#
+# **Objective:** Check the error for high order finite elements with
+# h and p-refinement for a very oscillatory solution.
+#
+# **Description:** We consider the same setting as in the previous test.
+# The difference is that now the
+# solution is very oscillatory $u(x) = \sin (64 \pi x)$.
+#
+# **Exercise:** What happens with the error?
+
+u(x) = sin(64*π*x[1])
+ps = collect(2:5)
+ncells = [2^i for i in 3:10]
+
+eh1, ndofs, uhs = hp_refinement(u,ps,ncells)
+
+convergence_plot(ndofs,eh1,ps)
+
+#
+
+slope = compute_slope(ndofs,eh1,log10,log10)
+
+# **Answer:** What we observe is the so-called pre-asymptotic behaviour. The
+# solution is so bad approximated for the coarsest meshes that we cannot
+# see the expected convergence. Once we have a mesh that can capture
+# the oscillations, we recover the expected convergence. Don't care about
+# the first points in a convergence analysis, they can behave in an
+# erratic way.
