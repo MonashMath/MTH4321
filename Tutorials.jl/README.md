@@ -1,11 +1,5 @@
 # Computational finite element tutorials
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://monashmath.github.io/MTH4321/Tutorials.jl/stable)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://monashmath.github.io/MTH4321/Tutorials.jl/dev)
-[![Build Status](https://travis-ci.com/monashmath/MTH4321/Tutorials.jl.svg?branch=master)](https://travis-ci.com/monashmath/MTH4321/Tutorials.jl)
-[![Codecov](https://codecov.io/gh/monashmath/MTH4321/Tutorials.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/monashmath/MTH4321/Tutorials.jl)
-[![Coveralls](https://coveralls.io/repos/github/monashmath/MTH4321/Tutorials.jl/badge.svg?branch=master)](https://coveralls.io/github/monashmath/MTH4321/Tutorials.jl?branch=master)
-
 These tutorials are delivered by [@santiagobadia](https://github.com/santiagobadia).
 
 In this set of tutorials, we will use the [`Gridap`](https://github.com/gridap/Gridap.jl) software library developed by [@santiagobadia](https://github.com/santiagobadia) and co-workers. This library provides tools for the numerical approximation of partial differential equations using mesh-based techniques (finite element methods in general). The library is written in [`Julia`](https://julialang.org), a somehow recent programming language that combines the expressiveness of dynamic languages like `Python` and the performance of static languages like `C++` or `FORTRAN`.
