@@ -33,6 +33,8 @@ If you are brave enough, you can try to set up `Julia`, download the tutorials, 
 
 In fact, to install all the tools that are needed for running these notebooks locally is pretty simple. The first thing that you have to do is to download `Julia` from [here](https://julialang.org/downloads/). Pick the one for your operating system. I would recommend you to install the newest stable release.
 
+You can find info about `Julia` installation in the web, e.g., [steps 1-5, Sect. 1.3.2 in this tutorial](https://www.softcover.io/read/7b8eb7d0/juliabook/introduction#sec-julia_win). 
+
 If you install `Julia` in `Linux`, you will need to add the folder with the `Julia` executable to the environment variable `PATH` in your `.bashrc`, e.g.,:
 ```
 export PATH=$HOME/Progs/julia-1.4.2/bin
