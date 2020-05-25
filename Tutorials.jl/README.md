@@ -12,14 +12,58 @@ Once launched, you can just run all cells and see the results obtained. Then you
 
 In any case, if you want to install Julia locally, and you want to go further into these concepts, just let me know. I can help you.
 
-# Tutorial 1
+## Tutorial 1
 
 The first tutorial is a driver for the approximation of the simplest possible finite element problem using `Gridap`. We will solve the Poisson problem in 1D. You can find it here:
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/MonashMath/MTH4321/master?filepath=Tutorials.jl%2Fnotebooks%2Ft001_poisson.ipynb)
 
-# Tutorial 2
+## Tutorial 2
 
 In the second tutorial, we will consider different methods of manufactured solutions, and carry out h and p-refinement convergence studies for different problems. We will plot the results and analyse them. 
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/MonashMath/MTH4321/master?filepath=Tutorials.jl%2Fnotebooks%2Ft002_convergence.ipynb)
+
+
+# How to run the notebooks locally
+
+Clone the repository
+```
+$ git clone https://github.com/gridap/Tutorials.git
+```
+
+Move into the folder and open a Julia REPL setting the current folder as the project environment. 
+```
+$ cd Tutorials
+$ julia --project=.
+               _
+   _       _ _(_)_     |  Documentation: https://docs.julialang.org
+  (_)     | (_) (_)    |
+   _ _   _| |_  __ _   |  Type "?" for help, "]?" for Pkg help.
+  | | | | | | |/ _` |  |
+  | | |_| | | | (_| |  |  Version 1.1.0 (2019-01-21)
+ _/ |\__'_|_|_|\__'_|  |  Official https://julialang.org/ release
+|__/                   |
+
+julia> 
+
+```
+
+Instantiate the environment. This will automatically download all required packages.
+```
+# Type ] to enter in pkg mode
+(Tutorials) pkg> instantiate
+```
+
+Build the notebooks
+```
+# Type Ctrl+C to get back to command mode
+julia> include("deps/build.jl")
+```
+
+Open the notebooks
+```
+julia> using IJulia
+julia> notebook(dir=pwd())
+```
+This will open a browser window. Navigate to the `notebooks` folder and open the tutorial you want. Enjoy!
