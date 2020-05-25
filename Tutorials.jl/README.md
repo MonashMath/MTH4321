@@ -27,9 +27,7 @@ In the second tutorial, we will consider different methods of manufactured solut
 
 # How to run the notebooks locally
 
-I have created the cloud version of the tutorials to simplify things. So...
-
-:skull: **you are not enforced to do the following part ** :skull:
+I have created the cloud version of the tutorials to simplify things. So :skull: **you are not enforced to do the following part** :skull:.
 
 If you are brave enough, you can try to set up `Julia`, download the tutorials, and run the notebooks locally. This is the 5* experience with `Julia` and `Gridap` but it requires some time if you are not a computers geek. Please, feel free to ask me.
 
