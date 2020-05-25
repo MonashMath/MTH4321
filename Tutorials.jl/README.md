@@ -29,9 +29,9 @@ In the second tutorial, we will consider different methods of manufactured solut
 
 I have created the cloud version of the tutorials to simplify things. So :skull: **you are not enforced to do the following part** :skull:.
 
-If you are brave enough, you can try to set up `Julia`, download the tutorials, and run the notebooks locally. This is the 5* experience with `Julia` and `Gridap` but it requires some time if you are not a computers geek. Please, feel free to ask me.
+If you are brave enough, you can try to set up `Julia`, download the tutorials, and run the notebooks locally. This is the 5* experience with `Julia` and `Gridap` but it requires some time if you are not a computer geek. Please, feel free to ask me.
 
-However, to install all the tools that are needed for running these notebooks locally is pretty simple. The first thing that you have to do is to download `Julia` from [here](https://julialang.org/downloads/). Pick the one for your operating system. I would recommend you to install the newest stable release.
+In fact, to install all the tools that are needed for running these notebooks locally is pretty simple. The first thing that you have to do is to download `Julia` from [here](https://julialang.org/downloads/). Pick the one for your operating system. I would recommend you to install the newest stable release.
 
 If you install `Julia` in `Linux`, you will need to add the folder with the `Julia` executable to the environment variable `PATH` in your `.bashrc`, e.g.,:
 ```
