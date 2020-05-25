@@ -45,7 +45,7 @@ $ git clone https://github.com/MonashMath/MTH4321
 
 Move into the folder `Tutorials.jl` and open a Julia REPL setting the current folder as the project environment. 
 ```
-$ cd Tutorials
+$ cd Tutorials.jl
 $ julia --project=.
                _
    _       _ _(_)_     |  Documentation: https://docs.julialang.org
