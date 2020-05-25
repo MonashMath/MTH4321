@@ -35,10 +35,16 @@ In fact, to install all the tools that are needed for running these notebooks lo
 
 You can find info about `Julia` installation in the web, e.g., [steps 1-5, Sect. 1.3.2 in this tutorial](https://www.softcover.io/read/7b8eb7d0/juliabook/introduction#sec-julia_win). 
 
-If you install `Julia` in `Linux`, you will need to add the folder with the `Julia` executable to the environment variable `PATH` in your `.bashrc`, e.g.,:
+If you install `Julia` in `Linux`, you will need to add the folder with the `Julia` executable to the environment variable `PATH` in your `.bashrc`, e.g.:
 ```
 export PATH=$HOME/Progs/julia-1.4.2/bin
 ```
+
+If you install `Julia` in `Windows`, and assuming that `C:\julia` is the installation directory of `Julia`, then you have to type the following command on a Windows Command Prompt (if you don't know how to open a Windows Command Prompt read, e.g., [this](https://www.isunshare.com/windows-10/4-ways-to-open-command-prompt-in-windows-10.html)):
+```
+setx PATH "%PATH%;C:\julia\bin"
+```
+Then, close the current Command Prompt, open a new one, and type `echo %PATH%`. The output must include `C:\julia\bin` in the end. If not, you must have something wrong.
 
 Next, assuming that you know about `git` and it is installed in your computer, you can clone the repository. You can have the following [basic `git` tutorial](https://github.com/MonashMath/SCI1022/blob/master/Git.md) we have created for SCI1022 Monash unit. In any case, if that is too much, you can simply download a `zip` file with this repos clicking on the `Clone or download` button on the top-right part of [this window](https://github.com/MonashMath/MTH4321).
 ```
