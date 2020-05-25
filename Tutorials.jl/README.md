@@ -40,10 +40,10 @@ export PATH=$HOME/Progs/julia-1.4.2/bin
 
 Next, assuming that you know about `git` and it is installed in your computer, you can clone the repository. You can have the following [basic `git` tutorial](https://github.com/MonashMath/SCI1022/blob/master/Git.md) we have created for SCI1022 Monash unit. In any case, if that is too much, you can simply download a `zip` file with this repos clicking on the `Clone or download` button on the top-right part of [this window](https://github.com/MonashMath/MTH4321).
 ```
-$ git clone https://github.com/gridap/Tutorials.git
+$ git clone https://github.com/MonashMath/MTH4321
 ```
 
-Move into the folder and open a Julia REPL setting the current folder as the project environment. 
+Move into the folder `Tutorials.jl` and open a Julia REPL setting the current folder as the project environment. 
 ```
 $ cd Tutorials
 $ julia --project=.
@@ -57,7 +57,6 @@ $ julia --project=.
 |__/                   |
 
 julia> 
-
 ```
 
 Instantiate the environment. This will automatically download all required packages.
