@@ -6,7 +6,7 @@ In this set of tutorials, we will use the [`Gridap`](https://github.com/gridap/G
 
 It is not the aim of this course to teach `Julia`, and you are not going to be asked to implement advanced algorithms. What will be presented can be understood without a primer in `Julia`. It is more about understanding the steps in a finite element software (mesh generation, creation of finite element spaces, bilinear forms, linear system and solver), and to be able to justify the results obtained using what we have learned from their mathematical analysis.
 
-On the other hand, to simplify things for you, I have created a set of interactive Jupyter notebooks and an executable environment on the cloud. The only thing that you need is to click on the `binder` badges  below to launch the tutorials on your browser. This way you do not have to install _anything_ locally on your computer. In any case, be patient, the launch of the tutorials _can take a considerable amount of time_ the first time.
+On the other hand, to simplify things for you, I have created a set of interactive Jupyter notebooks and an executable environment on the cloud. The only thing that you need to do is to click on the `binder` badges below to launch the tutorials on your browser. This way you do not have to install _anything_ locally on your computer. In any case, be patient, the launch of the tutorials _can take a considerable amount of time_ the first time.
 
 Once launched, you can just run all cells and see the results obtained. Then you can go cell by cell and run them if you want. Positioned at a code cell, just press `Ctrl+Enter`. You can change things in the cells and re-run them.
 
