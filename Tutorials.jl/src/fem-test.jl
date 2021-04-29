@@ -287,7 +287,7 @@ end
 
 rhs = zero(free_dof_values)
 assemble_rhs!(rhs,res)
-print(rhs)
+# print(rhs)
 
 # Now, we calculate the system matrix, which reads ∫ ∇u ⋅ ∇v . As above, `mat` is the array of cell matrices, not yet assembled.
 
@@ -299,7 +299,7 @@ cell_mat = map(∇ϕ_gp_phys,cell_ws,det_J_gps) do a,ws,js
   return b
 end
 
-print(cell_mat)
+# print(cell_mat)
 
 # Analogously, we create the assembly function for the system matrix.
 
@@ -354,4 +354,4 @@ end
 
 e_L2 = sum(cell_eL2)
 
-print(e_L2)
+print("The L2 error is: ",e_L2)
