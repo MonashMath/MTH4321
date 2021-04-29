@@ -74,7 +74,7 @@ model = CartesianDiscreteModel(pmin,pmax,partition)
 
 # Let us assume that we want to create a problem with solution
 
-u(x) = x[1]^3            # Analytical solution (for Dirichlet data)
+u(x) = x[1]            # Analytical solution (for Dirichlet data)
 #
 
 # We can use `Gridap` to compute differential operators over functions, e.g., its gradient.
@@ -324,7 +324,7 @@ l = length(free_dof_values)
 mat = zeros(l,l)
 assemble_mat!(mat,cell_mat)
 
-print(mat)
+# print(mat)
 
 # Now, we solve the system and get the free values of the FEM solution.
 
