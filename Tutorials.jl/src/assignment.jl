@@ -10,10 +10,15 @@
 
 # Task 2. Write the code that computes the H1 seminorm error of the solution. You have at your disposal `∇u`.
 
-# Can you create a function using ALL the code above that is parameterised with respect to the number of partitions per direction `n`. With this function, can you take the solution `u = x[1]^2` and linear elements and do a convergence plot. In the x axis compute log(h) (where h is the mesh size) and in the y axis compute the log(error) in L2 and H1 norm. Are the results as expected?
+# Create a function using ALL the code above that is parameterised with respect to the number of partitions per direction `n`, the dimension `D`, the length `L` and the analytical solution you want to obtain `u` using the method of manufactured solutions. With this function, can you take the solution `u = x[1]^2` and linear elements and do a convergence plot for n=2,4,8,16. In the x axis compute log(h) (where h is the mesh size) and in the y axis compute the log(error) in L2 norm and H1 seminorm. Are the results as expected? What happens when you change the order to 2?
 
-# function compute_fem_problem(n)
-     # Here the code, eliminating n = 4 line, we want to use the one provided
-     # ...
-     # return e_L2, e_H1
+# using Gridap
+# using Gridap.ReferenceFEs
+# using Gridap.Geometry
+# using Gridap.CellData
+#
+# function my_solver(n,D,L,u,order)
+#    # Here the code, eliminating n = 4 line, we want to use the one provided
+#    #...
+#    return e_L2, e_H1
 # end

@@ -63,7 +63,7 @@ using Gridap.CellData
 # First we define the geometry of the problem at hand, a D-cube [0,L]^D and the uniform partition into n^D cells. You can change D, e.g., 1 or 2 or 3 or whatever you like. The code is written in such a way that is dim-agnostic.
 
 L = 1 # Domain length in each space dimension
-D = 2 # Number of spatial dimensions
+D = 1 # Number of spatial dimensions
 n = 4 # Partition (i.e., number of cells per space dimension)
 
 pmin = Point(fill(0,D)) # Bounding box: Origin (0,0) in 2D
@@ -74,7 +74,7 @@ model = CartesianDiscreteModel(pmin,pmax,partition)
 
 # Let us assume that we want to create a problem with solution
 
-u(x) = x[1]            # Analytical solution (for Dirichlet data)
+u(x) = x[1]^3            # Analytical solution (for Dirichlet data)
 #
 
 # We can use `Gridap` to compute differential operators over functions, e.g., its gradient.
@@ -88,7 +88,7 @@ f(x) = -Δ(u)(x)        # Body force such that -Δu = f
 # Now, we create the reference FE space for our unknown uh. Since we solve the scalar Poisson problem (which represents, e.g., temperature conduction), our FE space is scalar.
 
 T = Float64 # Our unknown is a scalar field
-order = 1 # Order of approximation for the unknown
+order = 3 # Order of approximation for the unknown
 pol = Polytope(fill(HEX_AXIS,D)...) # Segment in 1D, Square in 2D ...
 reffe = LagrangianRefFE(T,pol,order)
 
@@ -132,7 +132,7 @@ cell_ws = collect(map(a -> get_weights(a), get_data(Qh))) # weights per cell
 # Idem for the reference FE being used for the geometry map (which are identical for linear FE spaces for the unknown).
 
 ϕgeo = get_shapefuns(reffe_g)
-∇ϕgeo = ∇.(get_shapefuns(reffe))
+∇ϕgeo = ∇.(get_shapefuns(reffe_g))
 
 # These basis is a set of functions that can be evaluated in a set of points.
 evaluate(ϕ,[Point(fill(0.0,D)),Point(fill(0.5,D)),Point(fill(1.0,D))])
@@ -255,8 +255,21 @@ det_J_gps = map(j->det.(j),∇geomap_gp)
 
 # This is used to compute the right-hand side, which simply reads - ∫ ∇u0 ⋅ ∇v . The residual is an array of cell-wise residuals (not yet assembled).
 
-aux_1 = map((a,b,c)->a.*b.*c,cell_ws,det_J_gps,∇u0_gps)
-res = map((a,b)->sum(broadcast(⋅,a,b),dims=1)',aux_1,∇ϕ_gp_phys)
+cell_∇u0_w_j = map((a,b,c)->a.*b.*c,cell_ws,det_J_gps,∇u0_gps)
+
+
+∇geomap_gp = map(cell_X) do Xk # apply the following block to each entry of cell_X (cell loop)
+  map(eachrow(∇ϕgeo_gp)) do grad # apply the following block to each row of `∇ϕgeo_gp` (gp loop)
+     sum(outer.(Xk,grad)) # ∑_a X_a⊗∇ϕ_a
+  end
+end
+
+# Extract gradients of shape functions and the value of the gradient of the offset function times the determinant of the jacobian times the weight for all integration points
+res = map(∇ϕ_gp_phys,cell_∇u0_w_j) do grad_gp, ∇u0_w_j
+  map(eachcol(grad_gp)) do gr # extract each shape function gradient at the integration points
+    -1*sum(gr.⋅∇u0_w_j)
+  end
+end
 
 # Now, we can create a function that assembles the cell-wise residuals.
 
@@ -315,7 +328,7 @@ print(mat)
 
 # Now, we solve the system and get the free values of the FEM solution.
 
-sol_free_dofs = -mat \ rhs
+sol_free_dofs = mat \ rhs
 
 # As above, using the fixed DOFs from the Dirichlet values (the offset function) and the obtained free values, we get the final solution, which we can evaluate e.g. in integration points.
 
