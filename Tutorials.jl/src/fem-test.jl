@@ -30,7 +30,7 @@
 #  0.9092974268256817
 #  0.1411200080598672
 
-# and (2) `map` for applying functions over collections (# https://docs.julialang.org/en/v1/base/collections/#Iterable-Collections)
+# (2) `map` for applying functions over collections (# https://docs.julialang.org/en/v1/base/collections/#Iterable-Collections)
 
 # julia> map(x -> x * 2, [1, 2, 3])
 # 3-element Vector{Int64}:
@@ -42,6 +42,24 @@
 #  11
 #  22
 #  33
+
+# and (3) a do-block expression of a map, which is just a way to define a map in which the function to be applied to the array(s) (first argument of `map`) is provided at the end using a do-end block:
+
+# julia> map([1, 2, 3]) do x
+#            x * 2
+#            end
+# 3-element Vector{Int64}:
+#  2
+#  4
+#  6
+# julia> map([1, 2, 3], [10, 20, 30]) do x, y
+#             x+y
+#             end
+# 3-element Vector{Int64}:
+#  11
+#  22
+#  33
+
 
 # Just a disclaimer. The code we are going to write is not efficient (we are allocating much more memory than needed and we are e.g. using dense linear algebra). You would never use dense algebra in a good FE solver. However, I think that these issues are not important here at all. If you want to see a low-level driver that is highly efficient, using the `Gridap` machinery, you can take a look here:
 
