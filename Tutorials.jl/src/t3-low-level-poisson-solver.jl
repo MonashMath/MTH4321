@@ -6,7 +6,7 @@
 
 # https://gridap.github.io/Tutorials/dev/l
 
-# In particular, I have created the simplest possible driver in `poisson.jl` that you could run and try to connect to what you have learned from the lectures. I recommend to read this tutorial before going further.
+# In particular, I have created the simplest possible driver in `t1-gridap-poisson.jl` that you could run and try to connect to what you have learned from the lectures. I recommend to read this tutorial before going further.
 
 # First, we will create the problem we want to solve using `Gridap`, next I will explain you what we want to extract from `Gridap` in order to implement our solver. The interesting part starts there. With some basic data (geometry, shape functions, integration points), we are going to implement a FE solver in a bunch of lines of code. I think that this is going to be a great complement to the lecture notes, since you will see in practise all what we have been describing in the notes.
 
@@ -30,7 +30,7 @@
 #  0.9092974268256817
 #  0.1411200080598672
 
-# (2) `map` for applying functions over collections (# https://docs.julialang.org/en/v1/base/collections/#Iterable-Collections)
+# (2) `map` for applying functions over input collections to generate output collections defined as the result of applying the function element by element to the input collection  (# https://docs.julialang.org/en/v1/base/collections/#Iterable-Collections)
 
 # julia> map(x -> x * 2, [1, 2, 3])
 # 3-element Vector{Int64}:
@@ -61,7 +61,7 @@
 #  33
 
 
-# Just a disclaimer. The code we are going to write is not efficient (we are allocating much more memory than needed and we are e.g. using dense linear algebra). You would never use dense algebra in a good FE solver. However, I think that these issues are not important here at all. If you want to see a low-level driver that is highly efficient, using the `Gridap` machinery, you can take a look here:
+# Just a disclaimer. The code we are going to write is not efficient (we are allocating much more memory than needed and we are e.g. using dense linear algebra). You would never use dense algebra in a performant FE solver. However, I think that these issues are not important here at all. If you want to see a low-level driver that is highly efficient, using the `Gridap` machinery, you can take a look here:
 
 # https://gridap.github.io/Tutorials/dev/pages/t012_poisson_dev_fe/#Tutorial-12:-Low-level-API-Poisson-equation-1
 
@@ -80,7 +80,7 @@ using Gridap.CellData
 
 # Here we define the problem we want to solve using Gridap. We are not interested in knowing how Gridap works or its interfaces. We are going to use some of the information created in Gridap to implement our finite element code for solving the Poisson equation.
 
-# First we define the geometry of the problem at hand, a D-cube [0,L]^D and the uniform partition into n^D cells. You can change D, e.g., 1 or 2 or 3 or whatever you like. The code is written in such a way that is dim-agnostic.
+# First we define the geometry of the problem at hand, a D-cube [0,L]^D and the uniform partition into n^D cells. For example, for D=2, L=1, and n=4, we would create a uniform partition with 4x4 cells of a 2-cube (i.e., a square). You can change D, e.g., 1 or 2 or 3 or whatever you like. The code is written in such a way that is dim-agnostic.
 
 L = 1 # Domain length in each space dimension
 D = 1 # Number of spatial dimensions
@@ -94,7 +94,7 @@ model = CartesianDiscreteModel(pmin,pmax,partition)
 
 # Let us assume that we want to create a problem with solution
 
-u(x) = x[1]            # Analytical solution (for Dirichlet data)
+u(x) = x[1]            # Analytical solution u(x)=x (for Dirichlet data)
 #
 
 # We can use `Gridap` to compute differential operators over functions, e.g., its gradient.
@@ -124,7 +124,7 @@ Uh = TrialFESpace(Vh,u)
 
 uh = interpolate(u,Uh)
 
-# Since we want to use a FE approximation of the Poisson equation, we will need to integrate mass and right-hand side terms. For that, we use numerical integration using a Gauss quadrature. We will also need some geometrical information of the geometrical model (e.g., cell nodes). The second argument in `CellQuadrature` is its degree, the order of polynomials that can be computed exactly in each direction. We have taken a degree that is more than what we will need.
+# Since we want to use a FE approximation of the Poisson equation, we will need to integrate mass and right-hand side terms. For that, we use numerical integration using a Gauss quadrature. We will also need some geometrical information of the geometrical model (e.g., cell nodes). The second argument in `CellQuadrature` is its degree, the order of polynomials that can be integrated exactly in each direction. We have taken a degree that is more than what we will need.
 
 Th = Triangulation(model)
 Qh = CellQuadrature(Th,4*order)
@@ -154,11 +154,11 @@ cell_ws = collect(map(a -> get_weights(a), get_data(Qh))) # weights per cell
 ϕgeo = get_shapefuns(reffe_g)
 ∇ϕgeo = ∇.(get_shapefuns(reffe_g))
 
-# These basis is a set of functions that can be evaluated in a set of points.
+# Each basis is a set of functions that can be evaluated in a set of points.
 evaluate(ϕ,[Point(fill(0.0,D)),Point(fill(0.5,D)),Point(fill(1.0,D))])
 evaluate(∇ϕ,[Point(fill(0.0,D)),Point(fill(0.5,D)),Point(fill(1.0,D))])
 
-# The first index in the resulting matrix is the point in the array of points while the second index is the shape function number. You cal also extract one shape function of the basis and evaluate it.
+# The first index in the resulting matrix is the point in the array of points while the second index is the shape function number. You can also extract one function of the basis and evaluate it individually.
 evaluate(ϕ[1],[Point(fill(0.0,D)),Point(fill(0.5,D)),Point(fill(1.0,D))])
 evaluate(∇ϕ[1],[Point(fill(0.0,D)),Point(fill(0.5,D)),Point(fill(1.0,D))])
 
@@ -182,7 +182,7 @@ cell_node_ids = collect(reshape(cell_node_ids,length(cell_node_ids))) # Linear i
 X = get_node_coordinates(Th) # Using Cartesian indices
 X = collect(reshape(X,length(X))) # Linear indices
 
-# From Gridap, we have collected the following information: (1) mesh info: the local-to-global node numbering `cell_node_ids` and vertices coordiates `X`; (2) quadrature info: integration points `cell_ips` and weights `cell_ws`; (3) Reference FE info: the basis of shape functions `ϕ` and their gradients `∇ϕ` (idem for the geometry interpolation, which is assumed to be linear, `ϕgeo` and `∇ϕgeo`), and the `evaluate` function that evaluates these functions in a set of points per cell; (4) FE space info: the local-to-global numbering `cell_dofs`, Dirichlet values `dirichlet_dof_values`; (4) FE function info: an array with the free `free_dof_values`.
+# Recapping, we have collected the following information from Gridap: (1) mesh info: the local-to-global node numbering `cell_node_ids` and vertices (nodes) coordinates `X`; (2) quadrature info: integration points `cell_ips` and weights `cell_ws`; (3) Reference FE info: the basis of shape functions `ϕ` and their gradients `∇ϕ` (idem for the geometry interpolation, which is assumed to be linear, `ϕgeo` and `∇ϕgeo`), and the `evaluate` function that evaluates these functions in a set of points per cell; (4) FE space info: the local-to-global numbering `cell_dofs`, an array with Dirichlet DOFs values `fixed_dof_values`; (5) FE function info: an array with the free DOFs values `free_dof_values`.
 
 # Part 3: Our FE Poisson solver implementation
 
@@ -209,7 +209,7 @@ cell_X = map(a->X[a],cell_node_ids)
 
 zero_vals = zero(free_dof_values)
 
-# Let us create a function that given the arrays of free and fixed dofs returns a function such that (in one cell) returns the nodal values of the FE function for a given DOF `i`. If `i` is fixed, it takes the value from the array of fixed dofs, otherwise from the free dofs.
+# Let us define a function that given the arrays of free and fixed DOFs returns a function such that (in one cell) returns the nodal values of the FE function for a given DOF `i`. If `i` is a free DOF (i.e., if `i>0`), it takes the value from the array of free DOFs, otherwise from the one of fixed DOFs.
 
 extract_vals(free_vs,fixed_vs) = i -> i>0 ? free_vs[i] : fixed_vs[-i]
 
@@ -220,7 +220,7 @@ cell_u0_nodes = map(a->evs.(a),cell_dofs)
 cell_u0_gps = map(a -> ϕ_gp*a,cell_u0_nodes)
 
 
-# The array cell_u_gps[icell][jgp] is indexed for each cell first and for each integration point next.
+# The array cell_u0_gps[icell][jgp] is indexed for each cell first and for each integration point next.
 
 # Idem for its gradients (in the reference space!).
 
@@ -236,7 +236,7 @@ cell_∇u0_gps[1][1][1]
 
 geomap_gp = map(a -> ϕgeo_gp*a, cell_X)
 
-# The Jacobian is just the gradient of this function. In order to explain how we compute it, let us provide some details. First, the gradient of shape functions `∇ϕgeo_gp` is an 2-array, with first index being the integration point and second the shape function number. It returns a vector (even though in 1D a vector is just one number). `cell_X` is a cell-wise array, and in each cell it returns a 1-array in Julia of vectors (the coordinates, again just one number in 1D). The Jacobian matrix is a tensor, and is mathematically computed as J_ij = ∂_i (x_i)/∂_j(X_j) (x denotes physical space and X reference space). On the other hand, x(X) = ∑_a ϕ_a X_a (a denotes the index of the node in the reference FE space). Combining this, J_ij = ∑_a ∂_j(ϕ_a) X_a[i] (we note that 1. we are using a scalar basis and vector DOF values here, e.g., ϕ is scalar and X_a is a vector). Another way to write this is J_ij = ∑_a X_a ⊗ ∇ϕ_a, where ⊗ is the outer vector product, i.e., (a⊗b)_ij = a_ib_j:
+# The Jacobian is just the gradient of this (vector-valued) function. In order to explain how we compute it, let us provide some details. First, the gradient of shape functions `∇ϕgeo_gp` is a 2-array, with first index being the integration point and second the shape function number. It returns a vector (even though in 1D a vector is just one number). `cell_X` is a cell-wise array, and in each cell it returns a 1-array of vectors (the coordinates, again just one number in 1D). The Jacobian matrix is a tensor, and is mathematically computed as J_ij = ∂(x_i)/∂(X_j) (x denotes physical space and X reference space). On the other hand, x(X) = ∑_a ϕ_a X_a (a denotes the index of the node in the reference FE space). Combining this, J_ij = ∑_a ∂(ϕ_a)/∂(X_j) X_a[i] (we note that we are using a scalar basis and vector DOF values here, e.g., ϕ is scalar and X_a is a vector). Another way to write this is J_ij = ∑_a X_a ⊗ ∇ϕ_a, where ⊗ is the outer vector product, i.e., (a⊗b)_ij = a_i*b_j:
 
 # julia> a = VectorValue(1.0,2.0)
 # VectorValue{2,Float64}(1.0, 2.0)
@@ -265,7 +265,7 @@ end
 inv_Jt_gps = map(j->transpose.(inv.(j)),∇geomap_gp)
 det_J_gps = map(j->det.(j),∇geomap_gp)
 
-# Now, we can compute the gradients in the physical space. (The ⋅ is the inner product defined in Gridap for vectors.)
+# Now, we can compute the gradients in the physical space. (The ⋅ operator is the inner product defined in Gridap for vectors.)
 
 ∇ϕ_gp_phys = map(a->a.⋅∇ϕ_gp,inv_Jt_gps)
 
@@ -277,14 +277,7 @@ det_J_gps = map(j->det.(j),∇geomap_gp)
 
 cell_∇u0_w_j = map((a,b,c)->a.*b.*c,cell_ws,det_J_gps,∇u0_gps)
 
-
-∇geomap_gp = map(cell_X) do Xk # apply the following block to each entry of cell_X (cell loop)
-  map(eachrow(∇ϕgeo_gp)) do grad # apply the following block to each row of `∇ϕgeo_gp` (gp loop)
-     sum(outer.(Xk,grad)) # ∑_a X_a⊗∇ϕ_a
-  end
-end
-
-# Extract gradients of shape functions and the value of the gradient of the offset function times the determinant of the jacobian times the weight for all integration points
+# Extract gradients of shape functions and the value of the gradient of the offset function times the determinant of the Jacobian times the weight for all integration points
 res = map(∇ϕ_gp_phys,cell_∇u0_w_j) do grad_gp, ∇u0_w_j
   map(eachcol(grad_gp)) do gr # extract each shape function gradient at the integration points
     -1*sum(gr.⋅∇u0_w_j)
