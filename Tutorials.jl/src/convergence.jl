@@ -20,22 +20,21 @@ function compute_solution(N,order,u)
   trian = get_triangulation(model)
 
   degree = (order-1)*2
-  quad = CellQuadrature(trian,degree)
+  dΩ = Measure(trian,degree)
+
+  reffe = ReferenceFE(lagrangian,Float64,order)
 
   V = TestFESpace(
-  model=model,
-  order=order,
-  reffe=:Lagrangian,
-  valuetype=Float64,
-  dirichlet_tags="boundary")
+     model,reffe;
+     conformity=:H1,
+     dirichlet_tags="boundary")
+
   U = TrialFESpace(V,u)
 
-  a(u,v) = inner(∇(u),∇(v))
-  l(v) = inner(v,f)
+  a(u,v) = ∫( ∇(v)⋅∇(u) )*dΩ
+  l(v) = ∫( v*f )*dΩ
 
-  t_Ω = AffineFETerm(a,l,trian,quad)
-
-  op = AffineFEOperator(U,V,t_Ω)
+  op = AffineFEOperator(a,l,U,V)
 
   uh = solve(op)
 
@@ -44,8 +43,8 @@ function compute_solution(N,order,u)
 
   e = u - uh
 
-  super_quad = CellQuadrature(trian,degree*4)
-  eh1 = sqrt(sum( integrate(h1(e),trian,super_quad) ))
+  dΩ_super = Measure(trian,degree*4)
+  eh1 = sqrt(sum( ∫( e*e + ∇(e)⋅∇(e) )*dΩ_super ))
 
   return uh, eh1
 end #function
@@ -113,7 +112,7 @@ end
 
 function plot_data_for_1d_fe_function(trian,uh,order)
   visgrid, cdata, pdata = visualization_data(trian,order,["uh"=>uh])
-  x = apply(x->x[1], get_node_coordinates(visgrid))
+  x = lazy_map(x->x[1], get_node_coordinates(visgrid))
   y = pdata["uh"]
   p = sortperm(x)
   return x[p], y[p]
@@ -203,15 +202,6 @@ slope = compute_slope(ndofs,eh1,log10,log10)
 
 plot_uhs(uhs,ps,ncells)
 
-# **Answer:** For first order, we observe superconvergence, better convergence
-# than stated by theory. For higher orders, the computed order
-# of convergence is as stated by the theory.
-#
-# Bounds can always be better than expected, known as
-# superconvergence. Some times, we can prove mathematically why it
-# happens for a particular mesh and discretisation method.
-#
-
 # ## Test 2
 #
 # **Objective:** Check the error for linear finite elements with h-refinement.
@@ -247,17 +237,6 @@ slope = compute_slope(ndofs,eh1,log10,log10)
 
 plot_uhs(uhs,ps,ncells)
 
-# **Answer 1:** The results are as we expect from theory because the solution
-# is only in $H^1((0,1))$. Higher order methods cannot exploit any
-# smoothness. So, we cannot improve the slope, as predicted by the theory.
-#
-# **Answer 2:** For this particular choice of the mesh, there is a point right
-# where the piecewise function changes. We can check that the exact
-# solution is in the finite element space. Thus, it is easy to check from
-# theory that with the Galerkin method we recover the exact solution (up to
-# errors related to linear solver, etc). Take a look at Cea's lemma,
-# the error is zero (for exact algebra).
-
 # ## Test 3
 #
 # **Objective:** Check the error for high order finite elements with
@@ -277,7 +256,7 @@ function p_refinement(u,ps,ncells)
   eh1, ndofs, uhs = hp_refinement(u,ps,[ncells])
   eh1 = [eh1[i][1] for i in 1:length(eh1)]
   ndofs = [ndofs[i][1] for i in 1:length(ndofs)]
-  uhs = [uhs[i][1] for i in 1:length(uhs)]
+  # uhs = [uhs[i][1] for i in 1:length(uhs)]
   return eh1, ndofs, uhs
 end
 
@@ -294,9 +273,6 @@ plot(ndofs,eh1,
 #
 
 slope = compute_slope([ndofs],[eh1],identity,log10)
-
-# **Answer:** Since we cannot exploit smoothness, we do not improve the solution
-# increasing the order. We cannot see convergence!
 
 # ## Test 4
 #
@@ -320,7 +296,7 @@ eh1, ndofs, uhs = p_refinement(u,ps,ncells)
 
 plot(ndofs,eh1,
      xaxis=:identity, yaxis=:log,
-     label=:pconv,
+    #  label=:pconv,
      shape=:auto,
      xlabel="DOFS",ylabel="error norm")
 
@@ -331,11 +307,6 @@ slope = compute_slope([ndofs],[eh1],identity,log10)
 #
 
 plot_uhs(uhs,ps,ncells)
-
-# **Answer:** p-refinement is an excellent choice, we have exponential
-# convergence! For smooth solutions, p-refinement is more cost effective
-# than h-refinement, exponential vs. algebraic convergence.
-
 
 # ## Test 5
 #
@@ -359,10 +330,3 @@ convergence_plot(ndofs,eh1,ps)
 #
 
 slope = compute_slope(ndofs,eh1,log10,log10)
-
-# **Answer:** What we observe is the so-called pre-asymptotic behaviour. The
-# solution is so bad approximated for the coarsest meshes that we cannot
-# see the expected convergence. Once we have a mesh that can capture
-# the oscillations, we recover the expected convergence. Don't care about
-# the first points in a convergence analysis, they can behave in an
-# erratic way.

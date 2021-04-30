@@ -6,6 +6,8 @@
 
 # https://gridap.github.io/Tutorials/dev/l
 
+# In particular, I have created the simplest possible driver in `poisson.jl` that you could run and try to connect to what you have learned from the lectures. I recommend to read this tutorial before going further.
+
 # First, we will create the problem we want to solve using `Gridap`, next I will explain you what we want to extract from `Gridap` in order to implement our solver. The interesting part starts there. With some basic data (geometry, shape functions, integration points), we are going to implement a FE solver in a bunch of lines of code. I think that this is going to be a great complement to the lecture notes, since you will see in practise all what we have been describing in the notes.
 
 # `Gridap` is written in `Julia`. Why `Julia`? Because it is easy to use (you do not precompile, like in C, C++ or Fortran) but it is so fast (unlike Matlab and Python). `Julia` is a new programming language, started at MIT in 2011. If you like programming and you are interested in computational and data science, it is something to put in the list of things to learn.
@@ -355,3 +357,5 @@ end
 e_L2 = sum(cell_eL2)
 
 print("The L2 error is: ",e_L2)
+
+# Now, you are ready to proceed to the practical assignment in `assignment.jl`. You can write the code in this file and submit the `.jl` file in the Moodle page.
