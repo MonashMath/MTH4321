@@ -66,58 +66,6 @@ Now, you can run the whole terminal, and understand what we are doing at every s
 
 Let me know if there is any technical problem or doubts in the tutorial. Have fun!
 
-These tutorials are delivered by [@santiagobadia](https://github.com/santiagobadia).
-
-In this set of tutorials, we will use the [`Gridap`](https://github.com/gridap/Gridap.jl) software library developed by [@santiagobadia](https://github.com/santiagobadia) and co-workers. This library provides tools for the numerical approximation of partial differential equations using mesh-based techniques (finite element methods in general). The library is written in [`Julia`](https://julialang.org), a somehow recent programming language that combines the expressiveness of dynamic languages like `Python` and the performance of static languages like `C++` or `FORTRAN`.
-
-It is not the aim of this course to teach `Julia`, and you are not going to be asked to implement advanced algorithms. What will be presented can be understood without a primer in `Julia`. It is more about understanding the steps in a finite element software (mesh generation, creation of finite element spaces, bilinear forms, linear system and solver), and to be able to justify the results obtained using what we have learned from their mathematical analysis.
-
-# How to run the notebooks locally
-
-I have created the cloud version of the tutorials to simplify things. So :skull: **you are not enforced to do the following part** :skull:.
-
-If you are brave enough, you can try to set up `Julia`, download the tutorials, and run the notebooks locally. This is the 5* experience with `Julia` and `Gridap` but it requires some time if you are not a computer geek. Please, feel free to ask me.
-
-In fact, to install all the tools that are needed for running these notebooks locally is pretty simple. The first thing that you have to do is to download `Julia` from [here](https://julialang.org/downloads/). Pick the one for your operating system. I would recommend you to install the newest stable release.
-
-If you install `Julia` in `Linux`, you will need to add the folder with the `Julia` executable to the environment variable `PATH` in your `.bashrc`, e.g.:
-```
-export PATH=$HOME/Progs/julia-1.4.2/bin
-```
-
-If you install `Julia` in `Windows`, and assuming that `C:\julia` is the installation directory of `Julia`, then you have to type the following command on a Windows Command Prompt (if you don't know how to open a Windows Command Prompt read, e.g., [this](https://www.isunshare.com/windows-10/4-ways-to-open-command-prompt-in-windows-10.html)):
-```
-setx PATH "%PATH%;C:\julia\bin"
-```
-Then, close the current Command Prompt, open a new one, and type `echo %PATH%`. The output must include `C:\julia\bin` in the end. If not, you must have something wrong. You can find more info about `Julia` installation in the web, e.g., [steps 1-5, Sect. 1.3.2 in this tutorial](https://www.softcover.io/read/7b8eb7d0/juliabook/introduction#sec-julia_win). 
-
-Next, assuming that you know about `git` and it is installed in your computer, you can clone the repository. You can have the following [basic `git` tutorial](https://github.com/MonashMath/SCI1022/blob/master/Git.md) we have created for SCI1022 Monash unit. In any case, if that is too much, you can simply download a `zip` file with this repos clicking on the `Clone or download` button on the top-right part of [this window](https://github.com/MonashMath/MTH4321).
-```
-$ git clone https://github.com/MonashMath/MTH4321
-```
-
-Move into the folder `Tutorials.jl` and open a Julia REPL setting the current folder as the project environment. 
-```
-$ cd Tutorials.jl
-$ julia --project=.
-               _
-   _       _ _(_)_     |  Documentation: https://docs.julialang.org
-  (_)     | (_) (_)    |
-   _ _   _| |_  __ _   |  Type "?" for help, "]?" for Pkg help.
-  | | | | | | |/ _` |  |
-  | | |_| | | | (_| |  |  Version 1.1.0 (2019-01-21)
- _/ |\__'_|_|_|\__'_|  |  Official https://julialang.org/ release
-|__/                   |
-
-julia> 
-```
-
-Instantiate the environment. This will automatically download all required packages.
-```
-# Type ] to enter in pkg mode
-(Tutorials) pkg> instantiate
-```
-
 # Creating Jupyter Notebooks
 
 If you want, you can also run the tutorials using Jupyter notebooks. I think it is better to run the code in VSCode. In any case, here you can see how to do that.
